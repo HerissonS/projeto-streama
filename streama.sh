@@ -4,9 +4,9 @@ sudo mkdir --parents /streama/docker
 sudo mkdir --parents /streama/ldap
 sudo mkdir --parents /streama/signup
 sudo chmod 777 -R /streama
-mv /home/ubuntu/projeto-streama/LDAP/* /streama/ldap/
-mv /home/ubuntu/projeto-streama/SIGNUP/* /streama/signup/
-mv /home/ubuntu/projeto-streama/STREAMA/* /streama/docker/
+mv /projeto-streama/LDAP/* /streama/ldap/
+mv /projeto-streama/SIGNUP/* /streama/signup/
+mv /projeto-streama/STREAMA/* /streama/docker/
 cd /streama/ldap
 sudo docker-compose up -d
 cd /streama/signup

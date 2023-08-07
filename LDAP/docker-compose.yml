@@ -9,9 +9,9 @@ services:
       - "389:389"
       - "636:636"
     volumes:
-      - ./data/certificates:/container/service/slapd/assets/certs
-      - ./data/slapd/database:/var/lib/ldap
-      - ./data/slapd/config:/etc/ldap/slapd.d
+      - /mnt/efs/ctfoco/data/certificates:/container/service/slapd/assets/certs
+      - /mnt/efs/ctfoco/data/slapd/database:/var/lib/ldap
+      - /mnt/efs/ctfoco/data/slapd/config:/etc/ldap/slapd.d
     environment:
       - LDAP_ORGANISATION=g2cloud
       - LDAP_DOMAIN=g2cloud.com

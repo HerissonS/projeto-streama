@@ -1,6 +1,9 @@
 <?php
+$server_name = $_SERVER['HTTP_HOST'];
+$url = 'ldap://' . $server_name;
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $ldapconn = ldap_connect("ldap://127.0.0.1", 389) or die("Não foi possível conectar ao servidor LDAP.");
+    $ldapconn = ldap_connect($url, 389) or die("Não foi possível conectar ao servidor LDAP.");
     ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
 
     $ldapbind = ldap_bind($ldapconn, "cn=admin,dc=g2cloud,dc=com", "admin") or die("Não foi possível autenticar com o servidor LDAP.");

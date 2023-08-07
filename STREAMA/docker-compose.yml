@@ -4,10 +4,10 @@ services:
     image: anapsix/alpine-java:8
     restart: unless-stopped
     volumes:
-    - ./streama-1.10.4.jar:/app/app.jar
-    - ./application.yml:/app/application.yml
-    - ./volumes/streama/uploads:/app/uploads
-    - ./volumes/streama/local-files:/app/local-files
+    - /mnt/efs/ctfoco/streama-1.10.4.jar:/app/app.jar
+    - /mnt/efs/ctfoco/application.yml:/app/application.yml
+    - /mnt/efs/ctfoco/volumes/streama/uploads:/app/uploads
+    - /mnt/efs/ctfoco/volumes/streama/local-files:/app/local-files
     working_dir: /app
     command: java -jar app.jar
     network_mode: "host"
