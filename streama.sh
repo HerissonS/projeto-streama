@@ -1,17 +1,17 @@
 #!/bin/bash
 sudo apt install docker-compose
-sudo mkdir --parents /streama/docker
-sudo mkdir --parents /streama/ldap
-sudo mkdir --parents /streama/signup
+sudo mkdir --parents /mnt/efs/ctfoco/streama/docker
+sudo mkdir --parents /mnt/efs/ctfoco/streama/ldap
+sudo mkdir --parents /mnt/efs/ctfoco/streama/signup
 sudo chmod 777 -R /streama
-mv /projeto-streama/LDAP/* /streama/ldap/
-mv /projeto-streama/SIGNUP/* /streama/signup/
-mv /projeto-streama/STREAMA/* /streama/docker/
-cd /streama/ldap
+mv ./LDAP/* /mnt/efs/ctfoco/streama/ldap/
+mv ./SIGNUP/* /mnt/efs/ctfoco/streama/signup/
+mv ./STREAMA/* /mnt/efs/ctfoco/streama/docker/
+cd /mnt/efs/ctfoco/streama/ldap
 sudo docker-compose up -d
-cd /streama/signup
+cd /mnt/efs/ctfoco/streama/signup
 sudo docker-compose up -d
-cd /streama/docker
+cd /mnt/efs/ctfoco/streama/docker
 wget https://github.com/streamaserver/streama/releases/download/v1.10.4/streama-1.10.4.jar
 sudo docker-compose up -d
 sudo chown ubuntu:ubuntu -R /streama
