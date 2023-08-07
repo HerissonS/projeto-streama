@@ -1,0 +1,42 @@
+environments:
+    production:
+        dataSource:
+            driverClassName: 'com.mysql.jdbc.Driver'
+            #driverClassName: 'com.mysql.cj.jdbc.Driver'
+            #url: "jdbc:mysql://db-streama.ck5bmgjrywa4.us-east-1.rds.amazonaws.com/streama" #mysql
+            url: "jdbc:mysql://db-streama.ck5bmgjrywa4.us-east-1.rds.amazonaws.com/streama"
+            username: admin
+            password: 'Projeto_12'
+            #port: 3306
+        server:
+            port: 8080
+streama:
+  uploadtypes: ['video/h264', 'video/mp4', 'video/mpeg', 'video/quicktime', 'video/webm', 'video/x-ms-wm', 'video/x-ms-wmv',
+              'video/x-msvideo', 'image/bmp', 'image/gif', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/svg+xml',
+              'image/x-icon', 'image/x-png', 'application/x-subrip', 'text/plain', 'text/vtt', 'text/plain', 'application/octet-stream']
+grails:
+   mail:
+     host: mail
+
+grails.plugin.springsecurity.providerNames:
+    - daoAuthenticationProvider
+    - ldapAuthProvider
+    - anonymousAuthenticationProvider
+    - rememberMeAuthenticationProvider
+grails.plugin.springsecurity.ldap:
+    context:
+        managerDn: 'cn=admin,dc=g2cloud,dc=com'
+        managerPassword: 'admin'
+        server: 'ldap://127.0.0.1:389'
+    search:
+        base: 'dc=g2cloud,dc=com'
+        filter: 'cn={0}'
+        searchSubtree: true
+        attributesToReturn: ['mail', 'displayName']
+    auth:
+        hideUserNotFoundExceptions: false
+    useRememberMe: false
+    authorities:
+        ignorePartialResultException: true
+        retrieveDatabaseRoles: false
+        retrieveGroupRoles: false
