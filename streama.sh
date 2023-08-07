@@ -4,6 +4,10 @@ sudo mkdir --parents /streama/docker
 sudo mkdir --parents /streama/ldap
 sudo mkdir --parents /streama/signup
 sudo chmod 777 -R /streama
+git clone https://github.com/HerissonS/projeto-streama.git
+mv /LDAP /streama/ldap
+mv /SIGNUP /streama/signup
+mv /STREAMA /streama/docker
 cd /streama/ldap
 sudo docker-compose up -d
 cd /streama/signup
