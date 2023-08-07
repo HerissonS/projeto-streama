@@ -26,12 +26,14 @@
 
         <input type="submit" value="Criar Usuário">
     </form>
-    
+
     <?php
-    $server_host = $_SERVER['SERVER_NAME'];
-    echo "Já possui conta? Faça login: " . $server_host:8080;
+        $server_name = $_SERVER['HTTP_HOST'];
+        $url = 'http://' . $server_name . ':8080';
     ?>
-    
+
+    <p>Já possui conta? <a href="<?php echo $url; ?>">Faça login</a></p>
+
+
 </body>
 </html>
-
