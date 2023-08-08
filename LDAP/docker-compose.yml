@@ -9,9 +9,9 @@ services:
       - "389:389"
       - "636:636"
     volumes:
-      - ./streama/ldap/data/certificates:/container/service/slapd/assets/certs
-      - ./streama/ldap/data/slapd/database:/var/lib/ldap
-      - ./streama/ldap/data/slapd/config:/etc/ldap/slapd.d
+      - /streama/ldap/data/certificates:/container/service/slapd/assets/certs
+      - /streama/ldap/data/slapd/database:/var/lib/ldap
+      - /streama/ldap/data/slapd/config:/etc/ldap/slapd.d
       - ./streama/ldap/ldap-data.ldif:/container/service/slapd/assets/config/bootstrap/ldif/99-custom.ldif
     environment:
       - LDAP_ORGANISATION=g2cloud
