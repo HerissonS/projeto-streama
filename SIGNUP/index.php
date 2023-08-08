@@ -25,7 +25,7 @@
             <input name="mail" placeholder="Email" type="email" required>
         </div>
         <div>
-            <input name="mail" placeholder="Repita o email" type="email" required>
+            <input name="cn" placeholder="Repita o email" type="email" required>
         </div>
         <div>
             <input name="userPassword" placeholder="Senha" type="password" required>
