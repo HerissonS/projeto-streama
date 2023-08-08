@@ -1,39 +1,55 @@
-<!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>CT Foco Stream</title>
-    <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="qfc-dark.css">
+  <!-- <link rel="stylesheet" href="qfc-light.css"> -->
+
 </head>
+
+
+
 <body>
-    <h1>CT Foco Stream</h1>
-    <h2>Crie sua conta</h2>
+  <div class="qfc-container">
+    <h2>CT Foco Stream</h2>
+    <label>Crie sua nova conta preenchendo seus dados.</label>
     <form action="addUser.php" method="post">
-        <label for="givenName">Nome:</label>
-        <input type="text" name="givenName" required><br>
+      <div>
+        <div>
+            <input name="givenName" placeholder="Nome" type="text" required>
+        </div>
+        <div>
+            <input name="sn" placeholder="Sobrenome" type="text" required>
+        </div>
+        <div>
+            <input name="mail" placeholder="Email" type="email" required>
+        </div>
+        <div>
+            <input name="mail" placeholder="Repita o email" type="email" required>
+        </div>
+        <div>
+            <input name="userPassword" placeholder="Senha" type="password" required>
+        </div>
 
-        <label for="sn">Sobrenome:</label>
-        <input type="text" name="sn" required><br>
 
-        <label for="mail">E-mail:</label>
-        <input type="email" name="mail" required><br>
+        <div>
+          <button type="submit">Criar usuário</button>
+        </div>
+      </div>
 
-        <label for="cn">Repita o E-mail:</label>
-        <input type="text" name="cn" required><br>
-
-        <label for="userPassword">Senha:</label>
-        <input type="password" name="userPassword" required><br>
-
-        <input type="submit" value="Criar Usuário">
-    </form>
-
-    <?php
+      <?php
         $server_name = $_SERVER['HTTP_HOST'];
         $url = 'http://' . $server_name . ':8080';
     ?>
 
     <p>Já possui conta? <a href="<?php echo $url; ?>">Faça login</a></p>
-
-
+    </form>
+  </div>
 </body>
+<style>
+  a {
+    color :#00bcd4;
+    text-decoration: none;
+  }
+</style>
 </html>
