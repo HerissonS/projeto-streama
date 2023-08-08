@@ -30,6 +30,7 @@ services:
 
   phpldapadmin:
     image: osixia/phpldapadmin:latest
+    restart: unless-stopped
     container_name: phpldapadmin
     hostname: phpldapadmin
     ports:
