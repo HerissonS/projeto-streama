@@ -4,7 +4,7 @@ services:
     image: anapsix/alpine-java:8
     restart: unless-stopped
     volumes:
-    - ./streama/docker/streama-1.10.4.jar:/app/app.jar
+    - /streama/docker/streama-1.10.4.jar:/app/app.jar
     - ./streama/docker/application.yml:/app/application.yml
     - ./streama/volumes/uploads:/app/uploads
     - ./streama/volumes/local-files:/app/local-files
