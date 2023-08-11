@@ -4,7 +4,7 @@ environments:
             driverClassName: 'com.mysql.jdbc.Driver'
             #driverClassName: 'com.mysql.cj.jdbc.Driver'
             #url: "jdbc:mysql://colocar_seu_link_db/nome_db" #mysql
-            url: "jdbc:colocar_seu_link_db/nome_db"
+            url: "jdbc:mysql://colocar_seu_link_db/nome_db"
             username: admin
             password: 'Projeto_12'
             #port: 3306
