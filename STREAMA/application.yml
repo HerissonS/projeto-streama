@@ -23,6 +23,7 @@ grails.plugin.springsecurity.providerNames:
     - ldapAuthProvider
     - anonymousAuthenticationProvider
     - rememberMeAuthenticationProvider
+    
 grails.plugin.springsecurity.ldap:
     context:
         managerDn: 'cn=admin,dc=g2cloud,dc=com'
