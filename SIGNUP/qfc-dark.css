@@ -4,7 +4,7 @@ body {
     --main-bg-color: #2B2B2B;
     background: var(--main-bg-color);
 
-    background-image: url(http://44.202.184.137/assets/bg.jpg);
+    background-image: url(/SIGNUP/images/bg.jpg);
 }
 
 .qfc-container {
