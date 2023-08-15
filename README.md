@@ -28,3 +28,5 @@ Abaixo iremos apresentar como subir o ambiente que implementamos e os participan
 
 ---------------
 
+Nesse projeto, conforme informado anteriormente, utilizamos o STREAMA como serviço de streaming, junto ao STREAMA implementamos autenticação com OPENLDAP e criamos uma página de cadastro, onde caso o usuário já tenha login ele tem a opção de ir para a página de login
+
