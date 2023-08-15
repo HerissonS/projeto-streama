@@ -2,6 +2,8 @@
 
 Este projeto foi implementado durante a oficina de projetos na Cloud Treinamentos.
 
+Instagram Cloud Treinamentos: https://www.instagram.com/comunidadecloud/
+
 Tivemos como objetivo no projeto implementar um serviço de streaming, para isso utilizamos o STREAMA.
 
 O projeto original do STREAMA está disponível no seguinte GitHub: https://github.com/streamaserver/streama
@@ -23,3 +25,6 @@ Abaixo iremos apresentar como subir o ambiente que implementamos e os participan
 | Nicolas Matos	                    |  https://www.linkedin.com/in/nicolasmatos-dev/                       |
 | Peterson Luiz de Souza Silva	    |  https://www.linkedin.com/in/peterson-ti                             |
 | Robson Ferraz do Amaral	        |  https://www.linkedin.com/in/robson-cloud-aws/                       |
+
+---------------
+
