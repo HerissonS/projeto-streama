@@ -330,21 +330,6 @@ A documentação técnica oficial produzida pelo grupo durante a pós-graduaçã
 
 ---
 
-## 🔮 Melhorias Futuras Técnicas
-
-Estrutura de evolução continuada da esteira DevSecOps e infraestrutura:
-
-* [x] **SAST Pipeline & Security Gate**: Análise estática de código com Semgrep Container, relatório SARIF v4 e bloqueio via `--error`.
-* [ ] **SCA / Dependency Scanning**: Análise de vulnerabilidades em dependências de pacotes (Composer Audit / Dependabot).
-* [ ] **Container Scanning**: Varredura de vulnerabilidades em imagens Docker (Trivy / Anchore).
-* [ ] **Secret Scanning**: Detecção automatizada de segredos em commits (Gitleaks / Trufflehog).
-* [ ] **DAST (Dynamic Analysis)**: Análise dinâmica de segurança da aplicação web em ambiente de staging (OWASP ZAP).
-* [ ] **Infraestrutura como Código (IaC)**: Provisionar a infraestrutura AWS via Terraform ou OpenTofu.
-* [ ] **HTTPS / Ingress Controller**: Configurar Nginx Reverse Proxy com Let's Encrypt para encerramento de TLS nas portas 8080 e 8096.
-* [ ] **LDAPS (LDAP sobre TLS)**: Habilitar criptografia SSL/TLS na comunicação LDAP (porta 636).
-
----
-
 ## 👥 Integrantes do Grupo (G2 Cloud Tech)
 
 Trabalho em equipe realizado pelos integrantes do Grupo 2:
