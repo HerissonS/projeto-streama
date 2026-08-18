@@ -1,0 +1,21 @@
+# Variáveis de ambiente com credenciais reais
+.env
+*.env
+
+# Volumes e dados locais do LDAP
+LDAP/data/
+/streama/
+
+# Binários executáveis baixados em tempo de execução
+STREAMA/streama-*.jar
+
+# Logs e arquivos de sistema
+*.log
+.DS_Store
+Thumbs.db
+
+# IDEs e Editores
+.idea/
+.vscode/
+*.swp
+*.swo

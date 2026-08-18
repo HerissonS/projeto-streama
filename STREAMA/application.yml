@@ -3,10 +3,9 @@ environments:
         dataSource:
             driverClassName: 'com.mysql.jdbc.Driver'
             #driverClassName: 'com.mysql.cj.jdbc.Driver'
-            #url: "jdbc:mysql://colocar_seu_link_db/nome_db" #mysql
-            url: "jdbc:mysql://colocar_seu_link_db/nome_db"
-            username: admin
-            password: 'Projeto_12'
+            url: "jdbc:mysql://${DB_HOST:colocar_seu_link_db}/${DB_NAME:nome_db}"
+            username: ${DB_USER:admin}
+            password: '${DB_PASSWORD:altere_sua_senha_db}'
             #port: 3306
         server:
             port: 8080
@@ -26,11 +25,11 @@ grails.plugin.springsecurity.providerNames:
     
 grails.plugin.springsecurity.ldap:
     context:
-        managerDn: 'cn=admin,dc=g2cloud,dc=com'
-        managerPassword: 'admin'
-        server: 'ldap://127.0.0.1:389'
+        managerDn: '${LDAP_ADMIN_DN:cn=admin,dc=g2cloud,dc=com}'
+        managerPassword: '${LDAP_ADMIN_PASSWORD:altere_sua_senha_admin}'
+        server: '${LDAP_SERVER:ldap://127.0.0.1:389}'
     search:
-        base: 'dc=g2cloud,dc=com'
+        base: '${LDAP_BASE_DN:dc=g2cloud,dc=com}'
         filter: 'cn={0}'
         searchSubtree: true
         attributesToReturn: ['mail', 'displayName']

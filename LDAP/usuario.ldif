@@ -18,7 +18,7 @@ uid: teste
 uidNumber: 1001
 gidNumber: 1001
 homeDirectory: /home/teste
-userPassword: ahsm3005 # Para definir a senha, você pode usar a ferramenta "slappasswd"
+userPassword: ALTERE_PARA_SUA_SENHA # Recomenda-se utilizar um hash seguro (ex: gerado via ferramenta "slappasswd")
 
 # Criação do grupo "streama-users"
 dn: cn=streama-users,ou=Groups,dc=g2cloud,dc=com

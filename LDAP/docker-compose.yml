@@ -13,18 +13,18 @@ services:
       - /streama/ldap/data/slapd/database:/var/lib/ldap
       - /streama/ldap/data/slapd/config:/etc/ldap/slapd.d
     environment:
-      - LDAP_ORGANISATION=g2cloud
-      - LDAP_DOMAIN=g2cloud.com
-      - LDAP_ADMIN_USERNAME=admin
-      - LDAP_ADMIN_PASSWORD=admin
-      - LDAP_CONFIG_PASSWORD=admin
-      - "LDAP_BASE_DN=dc=g2cloud,dc=com"
+      - LDAP_ORGANISATION=${LDAP_ORGANISATION:-g2cloud}
+      - LDAP_DOMAIN=${LDAP_DOMAIN:-g2cloud.com}
+      - LDAP_ADMIN_USERNAME=${LDAP_ADMIN_USERNAME:-admin}
+      - LDAP_ADMIN_PASSWORD=${LDAP_ADMIN_PASSWORD:-altere_sua_senha_admin}
+      - LDAP_CONFIG_PASSWORD=${LDAP_CONFIG_PASSWORD:-altere_sua_senha_config}
+      - "LDAP_BASE_DN=${LDAP_BASE_DN:-dc=g2cloud,dc=com}"
       - LDAP_TLS_CRT_FILENAME=server.crt
       - LDAP_TLS_KEY_FILENAME=server.key
       - LDAP_TLS_CA_CRT_FILENAME=g2cloud.com.ca.crt
       - LDAP_READONLY_USER=true
-      - LDAP_READONLY_USER_USERNAME=user-ro
-      - LDAP_READONLY_USER_PASSWORD=ro_pass
+      - LDAP_READONLY_USER_USERNAME=${LDAP_READONLY_USER_USERNAME:-user-ro}
+      - LDAP_READONLY_USER_PASSWORD=${LDAP_READONLY_USER_PASSWORD:-altere_sua_senha_ro}
     networks:
       - openldap
 
@@ -34,7 +34,7 @@ services:
     container_name: phpldapadmin
     hostname: phpldapadmin
     ports:
-      - "8096:80"
+      - "${PHPLDAPADMIN_PORT:-8096}:80"
     environment:
       - PHPLDAPADMIN_LDAP_HOSTS=openldap
       - PHPLDAPADMIN_HTTPS=false

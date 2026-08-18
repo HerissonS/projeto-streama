@@ -1,0 +1,50 @@
+name: DevSecOps SAST - Semgrep
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  semgrep-sast:
+    name: Semgrep SAST Analysis & Security Gate
+    runs-on: ubuntu-latest
+
+    container:
+      image: semgrep/semgrep
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Step 1 - Generate SARIF Report (Visibility)
+        run: |
+          semgrep scan \
+            --config=p/php \
+            --config=p/security-audit \
+            --config=p/owasp-top-10 \
+            --sarif \
+            --output=semgrep.sarif
+        continue-on-error: true
+
+      - name: Step 2 - Upload SARIF Report to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: semgrep.sarif
+
+      - name: Step 3 - Semgrep Security Gate (Enforcement / Blocking)
+        run: |
+          semgrep scan \
+            --config=p/php \
+            --config=p/security-audit \
+            --config=p/owasp-top-10 \
+            --error
