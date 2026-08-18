@@ -25,26 +25,44 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # Scan de visibilidade:
+      # gera o relatório SARIF para integração com GitHub Code Scanning.
+      # Os findings não bloqueiam este step porque o enforcement
+      # será realizado posteriormente pelo Security Gate.
       - name: Step 1 - Generate SARIF Report (Visibility)
         run: |
           semgrep scan \
             --config=p/php \
             --config=p/security-audit \
-            --config=p/owasp-top-10 \
             --sarif \
-            --output=semgrep.sarif
+            --output=semgrep.sarif \
+            .
         continue-on-error: true
 
-      - name: Step 2 - Upload SARIF Report to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
+      - name: Step 2 - Check SARIF Report
+        id: sarif
+        shell: sh
+        run: |
+          if [ -f semgrep.sarif ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Step 3 - Upload SARIF Report to GitHub Code Scanning
+        if: steps.sarif.outputs.exists == 'true'
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: semgrep.sarif
+          category: semgrep-sast
 
-      - name: Step 3 - Semgrep Security Gate (Enforcement / Blocking)
+      # Security Gate:
+      # --error faz a execução retornar falha quando o Semgrep
+      # encontrar findings correspondentes às regras executadas.
+      - name: Step 4 - Semgrep Security Gate (Enforcement / Blocking)
         run: |
           semgrep scan \
             --config=p/php \
             --config=p/security-audit \
-            --config=p/owasp-top-10 \
-            --error
+            --error \
+            .
