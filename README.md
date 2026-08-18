@@ -82,11 +82,11 @@ Projeto Acadêmico Original (2023)
         │
         ├── Sanitização de Credenciais & Secret Management (.env.example, .gitignore)
         ├── Automação Não-Destrutiva de Scripts
-        └── Pipeline SAST em 2 Fases (Semgrep Native Container + SARIF + Security Gate --error)
+        └── Pipeline SAST (Semgrep Container + SARIF Check/Upload v4 + Security Gate --error)
 ```
 
 1. **Fase 1 — Projeto Acadêmico Original (Agosto/2023)**: Desenvolvimento da proposta de arquitetura cloud na AWS, prova de conceito com Docker Compose, integração PHP + LDAP e documentação técnica.
-2. **Fase 2 — Evolução DevSecOps & Hardening (Posterior)**: Sanitização de credenciais expostas, parametrização via variáveis de ambiente, criação de `.gitignore` e implementação de esteira SAST em **duas fases (Visibilidade SARIF + Security Gate com `--error`)** automatizada via **GitHub Actions** utilizando o container oficial do **Semgrep**.
+2. **Fase 2 — Evolução DevSecOps & Hardening (Posterior)**: Sanitização de credenciais expostas, parametrização via variáveis de ambiente, criação de `.gitignore` e implementação de esteira SAST automatizada via **GitHub Actions** utilizando o container oficial do **Semgrep** com verificação condicional de SARIF e bloqueio via `--error`.
 
 ---
 
@@ -168,7 +168,7 @@ flowchart LR
 
 ### 3. Esteira CI/CD & DevSecOps (SAST Pipeline & Security Gate)
 
-Pipeline automatizada em duas fases executada diretamente no container oficial do Semgrep no GitHub Actions:
+Pipeline automatizada executada diretamente no container oficial do Semgrep no GitHub Actions:
 
 ```mermaid
 flowchart TD
@@ -176,10 +176,12 @@ flowchart TD
     GitHub -->|Trigger Workflow| GHA[GitHub Actions Runner]
     
     subgraph Container [Container: semgrep/semgrep]
-        Checkout[actions/checkout@v4] --> Step1[Fase 1: SARIF Scan]
-        Step1 -->|semgrep.sarif| Step2[Upload SARIF -> Code Scanning Alerts]
-        Step2 --> Step3[Fase 2: Security Gate]
-        Step3 -->|semgrep scan --error| Decision{Achados Bloqueantes?}
+        Checkout[actions/checkout@v4] --> Step1[Step 1: Scan de Visibilidade --sarif]
+        Step1 --> Step2{Step 2: SARIF Existe?}
+        Step2 -->|Sim| Step3[Step 3: Upload SARIF v4 -> Code Scanning Category: semgrep-sast]
+        Step2 -->|Não| Step4[Step 4: Security Gate --error]
+        Step3 --> Step4
+        Step4 --> Decision{Achados Bloqueantes?}
         Decision -->|Sim| Fail[Pipeline FAILED - Exit Code 1]
         Decision -->|Não| Pass[Pipeline PASSED - Exit Code 0]
     end
@@ -216,41 +218,44 @@ flowchart TD
 
 ## 🔍 SAST — Static Application Security Testing (Semgrep)
 
-O **SAST (Static Application Security Testing)** analisa o código-fonte da aplicação sem executá-la, identificando padrões inseguros, vulnerabilidades de injeção, falhas em chamadas de API e manipulação inadequada de dados.
+O **SAST (Static Application Security Testing)** automatiza a análise do código-fonte da aplicação sem executá-la, auxiliando na identificação antecipada de padrões potencialmente inseguros e problemas identificáveis por análise estática.
 
-Diferente de testes dinâmicos (DAST) ou análises de dependência (SCA), o SAST opera diretamente sobre o código autoral.
+Diferente de testes dinâmicos (DAST) ou análises de dependência (SCA), o SAST adiciona uma camada de controle diretamente sobre o código autoral.
 
 ### O Workflow no GitHub Actions (`.github/workflows/sast.yml`)
 
-Substituindo a action depreciada `semgrep-action@v1`, a nova implementação executa o **container oficial `semgrep/semgrep`** nativamente no runner do GitHub Actions em **duas fases distintas**:
+A esteira executa o container oficial **`semgrep/semgrep`** no runner do GitHub Actions através das seguintes etapas sequenciais:
 
-#### 1. Fase de Visibilidade (SARIF Upload)
-* Executa `semgrep scan` com as opções `--sarif --output=semgrep.sarif`.
-* Utiliza `continue-on-error: true` exclusivamente neste passo para garantir a criação do relatório mesmo que existam vulnerabilidades.
-* O relatório `semgrep.sarif` é enviado via `github/codeql-action/upload-sarif@v3` com `if: always()`, alimentando a aba **Security > Code Scanning Alerts** do repositório no GitHub.
+#### 1. Step 1 — Scan de Visibilidade (SARIF)
+* Executa `semgrep scan --config=p/php --config=p/security-audit --sarif --output=semgrep.sarif .`.
+* Utiliza `continue-on-error: true` para que eventuais achados nesta etapa não impeçam a verificação e o envio dos relatórios.
 
-#### 2. Fase de Controle (Security Gate / Bloqueio)
-* Executa `semgrep scan` com a flag de controle `--error`.
+#### 2. Step 2 — Verificação do Relatório SARIF
+* Executa uma verificação em script Shell para confirmar a criação física do arquivo `semgrep.sarif`.
+* Define a variável de saída `exists=true` ou `exists=false` (`$GITHUB_OUTPUT`), prevenindo tentativas de upload de arquivos inexistentes.
+
+#### 3. Step 3 — Upload para o GitHub Code Scanning
+* Executa condicionalmente (`if: steps.sarif.outputs.exists == 'true'`) utilizando a action **`github/codeql-action/upload-sarif@v4`**.
+* Define a categoria **`semgrep-sast`**, integrando os resultados com a aba **Security > Code Scanning Alerts** do repositório no GitHub.
+
+#### 4. Step 4 — Semgrep Security Gate (Enforcement / Bloqueio)
+* Executa `semgrep scan --config=p/php --config=p/security-audit --error .`.
 * **NÃO utiliza `continue-on-error`**.
-* **Comportamento de Exit Code**: Caso o Semgrep encontre vulnerabilidades que correspondam aos *rulesets* configurados, a CLI do Semgrep encerra com código de saída **`1` (Exit Code 1)**, fazendo o step e a pipeline do GitHub Actions **falharem (STATUS: FAILED)**. Se nenhum achado bloqueante for detectado, o encerramento ocorre com **`0` (STATUS: PASSED)**.
+* **Comportamento de Exit Code**: A flag nativa `--error` faz a CLI do Semgrep encerrar com código de saída **`1` (Exit Code 1)** quando forem detectados achados correspondentes às regras executadas, fazendo o job do GitHub Actions marcar status de **FALHA (FAILED)**. Caso nenhum achado bloqueante seja encontrado, o encerramento ocorre com **`0` (PASSED)**.
 
 ### Regras Habilitadas (`--config`)
-* `p/php`: Regras específicas para detecção de vulnerabilidades em PHP (LDAP Injection, Command Injection, XSS, sanitização).
-* `p/security-audit`: Regras gerais de auditoria de segurança de código.
-* `p/owasp-top-10`: Verificação contra os 10 principais riscos de segurança da OWASP.
+* **`p/php`**: Regras de segurança aplicáveis ao código PHP.
+* **`p/security-audit`**: Regras para auditoria geral de segurança de código.
 
 ### Escopo & Privilégios
-* **Escopo**: Focado no código autoral desenvolvido no projeto (`SIGNUP/*.php`, scripts shell e arquivos de configuração). O binário do Streama (software open-source de terceiros em Java) é ignorado.
+* **Escopo**: Focado no código autoral desenvolvido no projeto (portal em `SIGNUP/*.php`). O binário do Streama (software open-source de terceiros em Java) é uma dependência externa e não faz parte do escopo de análise autoral.
 * **Princípio do Menor Privilégio (`permissions`)**:
   ```yaml
   permissions:
     contents: read
     security-events: write
   ```
-* **Execução 100% OSS**: Não requer tokens de nuvem (`SEMGREP_APP_TOKEN`) nem contas externas para a execução.
-
-> [!IMPORTANT]
-> **Execução no GitHub Actions**: O scan SAST do Semgrep é executado exclusivamente no runner do GitHub Actions após o envio dos commits via `git push`. Nenhuma ferramenta de segurança é instalada ou executada na máquina local de desenvolvimento.
+* **Execução 100% OSS**: Não requer tokens de nuvem nem contas externas para a execução.
 
 ---
 
@@ -286,7 +291,7 @@ Neste repositório foram aplicadas correções de segurança essenciais em códi
 * **Variáveis de Ambiente (`.env`)**: Introduzido o arquivo modelo `.env.example` para parametrizar senhas sem expor dados sensíveis.
 * **Proteção de Repositório (`.gitignore`)**: Impedimento de subida de arquivos `.env`, logs e temporários.
 * **Automação Não-Destrutiva**: Refatoração do `streama.sh` com cópias seguras (`cp`) e permissões `755`.
-* **Análise Automatizada de Segurança (SAST & Security Gate)**: Varredura contínua de vulnerabilidades no código PHP a cada push via Semgrep Container no GitHub Actions com bloqueio via `--error`.
+* **Análise Automatizada de Segurança (SAST & Security Gate)**: Análise contínua de padrões no código PHP a cada push via Semgrep Container no GitHub Actions com bloqueio via `--error`.
 
 ---
 
@@ -347,7 +352,7 @@ A documentação técnica oficial produzida pelo grupo durante a pós-graduaçã
 
 ## 📈 Aprendizados & Engenharia de Nuvem
 
-* **DevSecOps & Security Gate**: Integração de análise estática de código (SAST) em duas fases (Visibilidade SARIF + Bloqueio via exit code `--error`) em pipelines CI/CD com GitHub Actions.
+* **DevSecOps & Security Gate**: Integração de análise estática de código (SAST) em fases (Visibilidade SARIF v4 com verificação de arquivo + Bloqueio via exit code `--error`) em pipelines CI/CD com GitHub Actions.
 * **Arquitetura de Alta Disponibilidade**: Projeto de soluções escaláveis na AWS utilizando balanceamento de carga, Auto Scaling e banco de dados gerenciado Multi-AZ.
 * **Autenticação Centralizada**: Conexão entre ecossistema Java/Spring Security e serviços de diretório OpenLDAP.
 * **Desenvolvimento Web & Integração**: Construção de formulários em PHP com integração nativa via `php-ldap`.
@@ -359,7 +364,7 @@ A documentação técnica oficial produzida pelo grupo durante a pós-graduaçã
 
 Estrutura de evolução continuada da esteira DevSecOps e infraestrutura:
 
-* [x] **SAST Pipeline & Security Gate**: Análise estática de código com Semgrep Container, relatório SARIF e bloqueio via `--error`.
+* [x] **SAST Pipeline & Security Gate**: Análise estática de código com Semgrep Container, relatório SARIF v4 e bloqueio via `--error`.
 * [ ] **SCA / Dependency Scanning**: Análise de vulnerabilidades em dependências de pacotes (Composer Audit / Dependabot).
 * [ ] **Container Scanning**: Varredura de vulnerabilidades em imagens Docker (Trivy / Anchore).
 * [ ] **Secret Scanning**: Detecção automatizada de segredos em commits (Gitleaks / Trufflehog).
@@ -395,4 +400,4 @@ Trabalho em equipe realizado pelos integrantes do Grupo 2:
 ## 📜 Atribuição de Autoria e Licença
 
 * **Projeto Streama Original**: [streamaserver/streama](https://github.com/streamaserver/streama) (Desenvolvido pela comunidade open-source).
-* **Este Repositório**: Contém os arquivos de infraestrutura, arquitetura AWS, orquestração Docker, scripts de automação e código do portal de cadastro desenvolvidos originalmente na Oficina de Projetos da Cloud Treinamentos e evoluídos com práticas de DevSecOps (Semgrep SAST Native Container, Security Gate com `--error`, SARIF e GitHub Actions).
+* **Este Repositório**: Contém os arquivos de infraestrutura, arquitetura AWS, orquestração Docker, scripts de automação e código do portal de cadastro desenvolvidos originalmente na Oficina de Projetos da Cloud Treinamentos e evoluídos com práticas de DevSecOps (Semgrep SAST Native Container, Security Gate com `--error`, SARIF v4 e GitHub Actions).
