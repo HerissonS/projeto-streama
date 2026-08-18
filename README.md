@@ -69,7 +69,7 @@ Este repositório apresenta a infraestrutura e arquitetura de um serviço de str
 
 ## 🔄 Evolução DevSecOps
 
-O projeto passou por um ciclo claro de evolução técnica:
+O projeto passou por um ciclo de evolução técnica:
 
 ```text
 Projeto Acadêmico Original (2023)
@@ -98,48 +98,15 @@ O projeto compreende a arquitetura de produção planejada para a AWS, o laborat
 
 Projetada para suportar alta carga com tolerância a falhas em 3 Zonas de Disponibilidade (Multi-AZ):
 
-```mermaid
-flowchart TD
-    subgraph Internet ["Usuários & Internet"]
-        Client[Navegadores / Clientes]
-    end
+<p align="center">
+  <img src="docs/architecture/arquitetura.png"
+       alt="Arquitetura AWS proposta para o Projeto Streama - CT Foco"
+       width="900" />
+</p>
 
-    subgraph AWS ["AWS Cloud (us-east-1)"]
-        R53[Route 53: ct-foco.com]
-        WAF[AWS WAF]
-        CF[CloudFront CDN]
-        ALB[Application Load Balancer]
-
-        subgraph VPC ["VPC: vpc_ct_foco (10.0.0.0/16)"]
-            subgraph PublicSubnets ["Subnets Públicas (10.0.1.0 - 10.0.3.0/24)"]
-                Bastion[Bastion Host SSH]
-                ALB_Node[ALB Interfaces]
-            end
-
-            subgraph PrivateSubnets ["Subnets Privadas (10.0.4.0 - 10.0.6.0/24)"]
-                ASG[Auto Scaling Group: EC2 c6gd.medium]
-                subgraph DockerHost ["Docker Engine na EC2"]
-                    SignupApp[Signup Page - PHP/Apache]
-                    StreamaApp[Streama - Java 8]
-                    LDAPApp[OpenLDAP + phpLDAPadmin]
-                end
-            end
-
-            subgraph DataLayer ["Camada de Dados & Serviços"]
-                RDS[(RDS MariaDB Multi-AZ)]
-                S3[(S3 Bucket: bucket-ctfoco)]
-            end
-        end
-    end
-
-    Client --> R53 --> WAF --> CF --> ALB
-    ALB --> ASG
-    ASG --> DockerHost
-    StreamaApp --> RDS
-    StreamaApp --> S3
-    StreamaApp --> LDAPApp
-    SignupApp --> LDAPApp
-```
+<p align="center">
+  <i>Arquitetura AWS proposta originalmente pelo G2 Cloud Tech para o projeto acadêmico.</i>
+</p>
 
 * **VPC**: Redes privadas e públicas segregadas (`10.0.0.0/16`).
 * **Compute**: Auto Scaling Group (`asg-ct-foco`) com instâncias EC2 (`c6gd.medium` Ubuntu 22.04) em subnets privadas.
