@@ -101,7 +101,7 @@ Projetada para suportar alta carga com tolerância a falhas em 3 Zonas de Dispon
 <p align="center">
   <img src="docs/architecture/arquitetura.png"
        alt="Arquitetura AWS proposta para o Projeto Streama - CT Foco"
-       width="900" />
+       width="700" />
 </p>
 
 <p align="center">
@@ -139,18 +139,21 @@ Pipeline automatizada executada diretamente no container oficial do Semgrep no G
 
 ```mermaid
 flowchart TD
-    Developer[Código Autoral PHP/Shell] -->|git push| GitHub[GitHub Repository]
-    GitHub -->|Trigger Workflow| GHA[GitHub Actions Runner]
-    
-    subgraph Container [Container: semgrep/semgrep]
-        Checkout[actions/checkout@v4] --> Step1[Step 1: Scan de Visibilidade --sarif]
-        Step1 --> Step2{Step 2: SARIF Existe?}
-        Step2 -->|Sim| Step3[Step 3: Upload SARIF v4 -> Code Scanning Category: semgrep-sast]
-        Step2 -->|Não| Step4[Step 4: Security Gate --error]
+    Developer["Código autoral PHP"] -->|"git push"| GitHub["GitHub Repository"]
+    GitHub -->|"Trigger Workflow"| GHA["GitHub Actions Runner"]
+
+    subgraph Container["Container: semgrep/semgrep"]
+        Checkout["actions/checkout@v4"] --> Step1["Step 1: Scan de Visibilidade<br/>SARIF"]
+        Step1 --> Step2{"Step 2: SARIF existe?"}
+
+        Step2 -->|"Sim"| Step3["Step 3: Upload SARIF<br/>GitHub Code Scanning"]
+        Step2 -->|"Não"| Step4["Step 4: Security Gate<br/>semgrep scan --error"]
+
         Step3 --> Step4
-        Step4 --> Decision{Achados Bloqueantes?}
-        Decision -->|Sim| Fail[Pipeline FAILED - Exit Code 1]
-        Decision -->|Não| Pass[Pipeline PASSED - Exit Code 0]
+
+        Step4 --> Decision{"Achados bloqueantes?"}
+        Decision -->|"Sim"| Fail["Pipeline FAILED<br/>Exit Code 1"]
+        Decision -->|"Não"| Pass["Pipeline PASSED<br/>Exit Code 0"]
     end
 ```
 
